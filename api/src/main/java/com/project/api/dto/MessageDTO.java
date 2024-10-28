@@ -13,5 +13,5 @@ public class MessageDTO {
     private Integer user_id;
 	private LocalDateTime created_at;
 	private LocalDateTime updated_at;
-
+	
 }

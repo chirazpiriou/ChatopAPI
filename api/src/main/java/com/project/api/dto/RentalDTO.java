@@ -16,5 +16,6 @@ public class RentalDTO {
 	 private Integer owner_id;
 	 private LocalDateTime created_at;
 	 private LocalDateTime updated_at;
-
+	 
+	 
 }

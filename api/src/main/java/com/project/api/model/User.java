@@ -14,8 +14,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-@Entity
+
 @Data
+@Entity
 @Table(name = "users")
 public class User {
 
@@ -25,8 +26,7 @@ public class User {
     private String name;
     private String email;
     private String password;
-
-    
+  
     @CreationTimestamp
 	private LocalDateTime created_at;
 	
@@ -35,6 +35,4 @@ public class User {
 	
 	@OneToMany(mappedBy = "owner")
     private Set<Rental> rentals;
-
-
 }
