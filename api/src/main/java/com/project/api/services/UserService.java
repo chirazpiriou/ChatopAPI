@@ -1,10 +1,13 @@
 package com.project.api.services;
 
+import java.util.NoSuchElementException;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +52,24 @@ public class UserService {
 		return authentication;
 	}
 	
+	public UserDTO getAuthenticatedUser(Authentication authentication) {
+		String email = authentication.getName();
+	    User user = userRepository
+	            .findByEmail(email)
+	            .orElseThrow(() -> new UsernameNotFoundException("The user cannot be found"));
+		
+		return modelMapper.map(user, UserDTO.class);
+	}
+	
+	
+	public UserDTO getUserById(Integer id) {
+		User user = userRepository
+				.findById(id)
+				.orElseThrow(() -> new  NoSuchElementException("No user with id :"+ id +" found"));
+		return modelMapper.map(user, UserDTO.class);
+		
+	}
+
 	
 	
 
