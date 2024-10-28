@@ -5,7 +5,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
@@ -19,6 +21,8 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
@@ -26,13 +30,21 @@ import com.nimbusds.jose.jwk.source.ImmutableSecret;
 public class SpringSecurityConfig {
 	
 	private String jwtKey = "MaoMCfSiuncRCMfraSQ1w9Vw4yRRetVc";
+	
+	
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {		
 		return http
 				.csrf(csrf -> csrf.disable()) 
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) 
-				.authorizeHttpRequests(auth -> auth.anyRequest().authenticated()) 
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(
+		                        new OrRequestMatcher(
+		                                new AntPathRequestMatcher("/api/auth/register"),
+		                                new AntPathRequestMatcher("/api/auth/login"))
+		                ).permitAll()
+						.anyRequest().authenticated()) 
 				.httpBasic(Customizer.withDefaults())
 				.oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()))
 				.build();		
@@ -43,17 +55,7 @@ public class SpringSecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 	
-	@Bean
-	public UserDetailsService users() {
-		UserDetails user = User.builder()
-				.username("user")
-				.password(passwordEncoder()
-				.encode("password"))
-				.roles("USER")
-				.build();		
-		return new InMemoryUserDetailsManager(user);
-	}
-	
+
 	
 	@Bean
 	public JwtDecoder jwtDecoder() {
@@ -65,6 +67,11 @@ public class SpringSecurityConfig {
 	@Bean
 	public JwtEncoder jwtEncoder() {
 		return new NimbusJwtEncoder(new ImmutableSecret<>(this.jwtKey.getBytes()));
+	}
+	
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
 	}
 
 
