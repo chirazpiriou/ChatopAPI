@@ -27,12 +27,14 @@ public class SpringSecurityConfig {
 	
 	private String jwtKey = "MaoMCfSiuncRCMfraSQ1w9Vw4yRRetVc";
 	
+
 	
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {		
 		return http
 				.csrf(csrf -> csrf.disable()) 
+				.cors(cors -> cors.configurationSource(new CorsConfig().corsConfigurationSource()))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) 
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(
