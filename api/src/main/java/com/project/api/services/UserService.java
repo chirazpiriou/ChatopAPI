@@ -77,7 +77,7 @@ public class UserService {
 	}
 	
 	
-	public UserDTO getUserById(Integer id) {
+	public <Optional>UserDTO getUserById(Integer id) {
 		User user = userRepository
 				.findById(id)
 				.orElseThrow(() -> new  NoSuchElementException("No user with id :"+ id +" found"));

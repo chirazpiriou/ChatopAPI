@@ -36,7 +36,7 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
-import com.nimbusds.jose.jwk.source.ImmutableSecret;
+
 
 import jakarta.annotation.PostConstruct;
 
@@ -49,10 +49,6 @@ import java.security.KeyFactory;
 
 public class SpringSecurityConfig {
 
-
-
-	
- 
 	@Value("${jwt.public.key.path}")
     private String publicKeyPath;
 
@@ -119,7 +115,12 @@ public class SpringSecurityConfig {
 						.requestMatchers(
 		                        new OrRequestMatcher(
 		                                new AntPathRequestMatcher("/api/auth/register"),
-		                                new AntPathRequestMatcher("/api/auth/login"))
+		                                new AntPathRequestMatcher("/api/auth/login")),
+										new AntPathRequestMatcher("/**/*.png"),
+										new AntPathRequestMatcher("/**/*.jpg"),
+										new AntPathRequestMatcher("/**/*.jpeg"),
+										new AntPathRequestMatcher("/**/*.gif"),
+										new AntPathRequestMatcher("/images/**")
 		                ).permitAll()
 						.anyRequest().authenticated()) 
 				.httpBasic(Customizer.withDefaults())
