@@ -28,7 +28,7 @@ public class RentalSubmissionDTO {
     @Size(min = 1, message = "Description must be at least 1 character")
     private String description;
 
-    //private Integer owner_id;
+    private Integer owner_id;
 
 
 }

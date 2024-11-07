@@ -39,7 +39,7 @@ private String serverUrl = "http://localhost:3001/pictures";
 
 
 	
-	public RentalService (RentalRepository rentalRepository, ModelMapper modelMapper, UserService userService, UserRepository userRepository) {
+	public RentalService (RentalRepository rentalRepository, ModelMapper modelMapper,  UserRepository userRepository) {
 		this.rentalRepository = rentalRepository;
 		this.modelMapper = modelMapper;
         this.userRepository = userRepository;
@@ -48,8 +48,18 @@ private String serverUrl = "http://localhost:3001/pictures";
 
 	//Return all rentals
 	public RentalsDTO getAllRentals() {
+        
 		List<Rental> rentals = rentalRepository.findAll();
-		List<RentalDTO> rentalsDTOList = rentals.stream().map(rental -> modelMapper.map(rental, RentalDTO.class)).toList();
+
+
+
+		List<RentalDTO> rentalsDTOList = rentals.stream()
+        .map(rental -> {RentalDTO rentalDTO = modelMapper.map(rental, RentalDTO.class);
+        if (rental.getOwner() != null) {
+            rentalDTO.setOwner_id(rental.getOwner().getId());
+        }
+        return rentalDTO;
+        }).toList();
 		RentalsDTO rentalsDTO = new RentalsDTO();
 		rentalsDTO.setRentals(rentalsDTOList);
 		return rentalsDTO;
@@ -58,11 +68,16 @@ private String serverUrl = "http://localhost:3001/pictures";
 
 	//Get rental by Id
 	public Optional<RentalDTO> getRentalById(Integer id) {
-		Optional<Rental> rental = rentalRepository.findById(id);
-		if (rental.isEmpty()){
+		Optional<Rental> rentalOpt = rentalRepository.findById(id);
+		if (rentalOpt.isEmpty()){
 			return Optional.empty();
 		}
-		return Optional.of(modelMapper.map(rental,RentalDTO.class));
+        Rental rental = rentalOpt.get();
+        RentalDTO rentalDTO = modelMapper.map(rental, RentalDTO.class);
+        if (rental.getOwner() != null) {
+            rentalDTO.setOwner_id(rental.getOwner().getId());
+        }
+		return Optional.of((rentalDTO));
 		
 	}
 
@@ -74,7 +89,7 @@ private String serverUrl = "http://localhost:3001/pictures";
             User authenticatedOwner = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
             Integer ownerId = authenticatedOwner.getId(); 
-            System.out.println(ownerId);
+            
 
 
             MultipartFile picture = rentalSubmissionDTO.getPicture();
@@ -118,15 +133,20 @@ private String serverUrl = "http://localhost:3001/pictures";
         if (rentalOpt.isPresent()) {
             Rental rental = rentalOpt.get();
             LocalDateTime originalCreatedAt = rental.getCreated_at(); 
+            
             rentalDTO.setOwner_id(rental.getOwner().getId());
             rentalDTO.setPicture(rental.getPicture());
             Integer originalId = rental.getId(); 
             modelMapper.map(rentalDTO, rental);
+            
             rental.setId(originalId); 
             rental.setCreated_at(originalCreatedAt); 
             rental.setUpdated_at(LocalDateTime.now());
             Rental savedRental = rentalRepository.save(rental);
-            return modelMapper.map(savedRental, RentalDTO.class);
+            RentalDTO rentaldto = modelMapper.map(savedRental, RentalDTO.class);
+
+
+            return rentaldto ;
         } else {
             return null;
         }
