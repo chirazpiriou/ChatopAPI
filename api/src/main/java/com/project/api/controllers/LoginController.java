@@ -21,6 +21,11 @@ import com.project.api.dto.UserDTO;
 import com.project.api.services.JWTService;
 import com.project.api.services.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag (name ="Login Controller")
 @RestController
 @RequestMapping("/api/auth")
 public class LoginController {
@@ -35,7 +40,15 @@ public class LoginController {
 	}
 	
 	
-	
+	@Operation(
+        summary = "Register a new user",
+        description = "This endpoint allows a new user to register by providing an email and password. A JWT token will be generated and returned upon successful registration.",
+        responses = {
+            @ApiResponse(responseCode = "201", description = "User successfully registered and authenticated", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "409", description = "Email already in use"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+        }
+    )
 	@PostMapping("/register")
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
@@ -56,6 +69,14 @@ public class LoginController {
 	}
 	
 	
+	@Operation(
+        summary = "User login",
+        description = "This endpoint allows an existing user to log in with email and password. A JWT token is returned upon successful authentication.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "User successfully logged in and authenticated", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid credentials")
+        }
+    )
 	@PostMapping("/login")
 	@ResponseStatus(HttpStatus.OK) 
 	@ResponseBody
@@ -72,6 +93,14 @@ public class LoginController {
 	}
 	
 	
+	@Operation(
+        summary = "Get authenticated user details",
+        description = "This endpoint returns the details of the currently authenticated user.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved user details", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - User not authenticated")
+        }
+    )
 	@GetMapping("/me")
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody

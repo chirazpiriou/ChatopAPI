@@ -17,10 +17,14 @@ import com.project.api.dto.MessageDTO;
 
 import com.project.api.services.MessageService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 
 
+@Tag (name ="Message Controller")
 @RestController
 @RequestMapping("/api/messages")
 public class MessageController {
@@ -31,15 +35,29 @@ public class MessageController {
         this.messageService = messageService;
     }
 
+     @Operation(
+        summary = "Send a message",
+        description = "This endpoint allows the user to send a message. ",
+        responses = {
+            @ApiResponse(responseCode = "201", description = "Message successfully sent", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Invalid message data"),
+            
+        }
+    )
     @PostMapping("")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ResponseEntity<Map<String, String>> sendMessage(@RequestBody MessageDTO messageDTO ) {
    
-        
+        try {
+            messageService.sendMessage(messageDTO);
+            return new ResponseEntity<>(Collections.singletonMap("message", "Message send with success"), HttpStatus.CREATED);
+
+        }catch (Exception e) {
+            return new ResponseEntity<>(Collections.singletonMap("message", "Failed to send message"), HttpStatus.BAD_REQUEST);
+        }
        
-        messageService.sendMessage(messageDTO);
-        return new ResponseEntity<>(Collections.singletonMap("message", "Message send with success"), HttpStatus.CREATED);
+        
       
      
     }

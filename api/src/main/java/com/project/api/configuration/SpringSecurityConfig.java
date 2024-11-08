@@ -120,7 +120,9 @@ public class SpringSecurityConfig {
 										new AntPathRequestMatcher("/**/*.jpg"),
 										new AntPathRequestMatcher("/**/*.jpeg"),
 										new AntPathRequestMatcher("/**/*.gif"),
-										new AntPathRequestMatcher("/images/**")
+										new AntPathRequestMatcher("/images/**"),
+										new AntPathRequestMatcher("/swagger-ui/**"),
+                                		new AntPathRequestMatcher("/v3/api-docs/**")
 		                ).permitAll()
 						.anyRequest().authenticated()) 
 				.httpBasic(Customizer.withDefaults())

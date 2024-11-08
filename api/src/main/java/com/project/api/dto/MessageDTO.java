@@ -2,8 +2,9 @@ package com.project.api.dto;
 
 import java.time.LocalDateTime;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
+@Schema (name ="Message DTO")
 @Data
 public class MessageDTO {
 
